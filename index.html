@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>cURL Builder</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1018;--panel:#121b29;--field:#0b1320;--line:#29364a;--text:#eef3fb;--muted:#9aabc2;--accent:#75e3c0;--danger:#ffada9}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}main{max-width:1400px;margin:auto;padding:40px 24px}h1{font-size:36px;margin:0;letter-spacing:-1.5px}h1 span{color:var(--accent)}h2{font-size:17px;margin:0 0 18px}p{color:var(--muted)}.intro{margin:8px 0 30px}.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start}.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px;margin-bottom:20px}.output{position:sticky;top:20px}.row{display:grid;grid-template-columns:130px 1fr;gap:12px}.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}label,.label{display:block;font-size:13px;font-weight:600;margin-bottom:7px}input,select,textarea,button{font:inherit}input:not([type=checkbox]),select,textarea{width:100%;padding:11px 12px;background:var(--field);color:var(--text);border:1px solid var(--line);border-radius:8px}textarea{min-height:140px;resize:vertical;font-family:ui-monospace,Consolas,monospace;font-size:13px}input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}button{cursor:pointer;border:1px solid var(--line);border-radius:8px;padding:10px 15px;background:#1b293c;color:var(--text)}button:hover{filter:brightness(1.15)}button:disabled{cursor:not-allowed;opacity:.45}.primary{background:var(--accent);color:#092019;border-color:var(--accent);font-weight:700}.group{margin-top:20px}.help{font-size:12px;color:var(--muted);margin:7px 0 0}.header-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr) 40px;gap:8px;margin:10px 0}.remove{padding:0;color:var(--danger);font-size:22px}.checks{display:grid;grid-template-columns:1fr 1fr;gap:14px}.check{display:flex;gap:9px;align-items:flex-start;font-size:13px;font-weight:400;margin:0}.check input{accent-color:var(--accent);width:17px;height:17px;flex-shrink:0;margin:3px 0}.check small{display:block;color:var(--muted);font-size:11px}pre{margin:18px 0;min-height:240px;padding:20px;background:#080e17;border:1px solid var(--line);border-radius:10px;white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.8 ui-monospace,SFMono-Regular,Consolas,monospace;color:#b5f5dc}.toolbar{display:flex;gap:10px;flex-wrap:wrap}.status{font-size:12px;color:var(--accent)}.notice{padding:10px 12px;margin-top:12px;border-radius:8px;background:#202b3c;color:#c2cee0;font-size:12px}.error{color:var(--danger)}.badge{display:inline-block;font-size:11px;border:1px solid var(--line);border-radius:20px;padding:4px 10px;color:var(--muted);margin-bottom:12px}[hidden]{display:none!important}footer{font-size:12px;color:var(--muted);margin:24px 0}#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--accent);color:#092019;padding:12px 22px;border-radius:10px;box-shadow:0 8px 35px #0008;z-index:10}@media(max-width:900px){.layout{grid-template-columns:1fr}.output{position:static}}@media(max-width:520px){main{padding:24px 14px}.panel{padding:18px}.row,.two,.checks{grid-template-columns:1fr}h1{font-size:30px}.header-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 34px}}
+</style>
+  <!-- Favicon SVG embutido: mantém o site em um único arquivo. -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%230b1018%22%2F%3E%3Cpath%20d%3D%22M16%2021l12%2011-12%2011%22%20fill%3D%22none%22%20stroke%3D%22%2375e3c0%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M34%2043h15%22%20stroke%3D%22%2375e3c0%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E">
+</head>
+<body>
+<main>
+<h1>cURL <span>Builder</span></h1>
+<p class="intro">Monte sua requisição. Escolha o terminal. Copie e execute.</p>
+<div class="layout">
+<form id="builder" novalidate autocomplete="off">
+<section class="panel">
+<h2>01 · Configuração da requisição</h2>
+<div class="row"><div><label for="method">Método HTTP</label><select id="method"><option>GET</option><option>POST</option><option>PUT</option><option>PATCH</option><option>DELETE</option><option>HEAD</option></select></div><div><label for="url">URL da requisição</label><input id="url" type="url" placeholder="https://api.exemplo.com/endpoint" aria-describedby="urlHelp"><p id="urlHelp" class="help">Informe uma URL absoluta HTTP ou HTTPS.</p></div></div>
+<div class="group"><span class="label">Headers personalizados</span><div id="headers"></div><button id="addHeader" type="button">+ Adicionar header</button></div>
+<div id="bodySection" class="group" hidden>
+<label for="contentType">Tipo de conteúdo do body</label><select id="contentType"><option value="application/json">application/json</option><option value="application/x-www-form-urlencoded">application/x-www-form-urlencoded</option><option value="text/plain">text/plain</option><option value="custom">Outro…</option></select>
+<div id="customTypeSection" class="group" hidden><label for="customType">Content-Type personalizado</label><input id="customType" placeholder="application/xml"></div>
+<div class="group"><label for="body">Body <span class="help">(opcional)</span></label><textarea id="body" spellcheck="false" placeholder='{"nome":"Michael"}'></textarea><p class="help">O conteúdo é enviado literalmente com --data-raw. Para formulário, informe chave=valor&amp;outra=valor já codificados.</p></div>
+</div>
+<div class="group"><label for="auth">Autenticação</label><select id="auth"><option value="none">Sem autenticação</option><option value="bearer">Bearer Token</option><option value="basic">Basic Auth</option><option value="api">API Key via header</option></select></div>
+<div id="bearerSection" class="group" hidden><label for="token">Bearer Token</label><input id="token" type="password" placeholder="TOKEN" spellcheck="false"></div>
+<div id="basicSection" class="two group" hidden><div><label for="username">Usuário</label><input id="username"></div><div><label for="password">Senha</label><input id="password" type="password"></div></div>
+<div id="apiSection" class="two group" hidden><div><label for="apiName">Nome do header</label><input id="apiName" placeholder="X-API-Key"></div><div><label for="apiValue">API Key</label><input id="apiValue" type="password"></div></div>
+</section>
+<section class="panel"><h2>02 · O que quero ver na resposta</h2><div class="checks">
+<label class="check"><input type="checkbox" id="include"><span>Mostrar response headers<small>-i · headers e body</small></span></label>
+<label class="check"><input type="checkbox" id="head"><span>Mostrar apenas response headers<small>-I · tem prioridade sobre -i</small></span></label>
+<label class="check"><input type="checkbox" id="status"><span>Mostrar status code HTTP<small>%{http_code}</small></span></label>
+<label class="check"><input type="checkbox" id="time"><span>Mostrar tempo total da requisição<small>%{time_total}</small></span></label>
+<label class="check"><input type="checkbox" id="size"><span>Mostrar tamanho da resposta<small>%{size_download} · bytes do body</small></span></label>
+<label class="check"><input type="checkbox" id="saveHeaders"><span>Salvar headers em arquivo<small>-D headers.txt</small></span></label>
+<label class="check"><input type="checkbox" id="saveBody"><span>Salvar body em arquivo<small>-o response.txt</small></span></label>
+<label class="check"><input type="checkbox" id="verbose"><span>Mostrar requisição completa em modo verboso<small>-v · diagnóstico da conexão</small></span></label>
+<label class="check"><input type="checkbox" id="redirect"><span>Seguir redirecionamentos<small>-L</small></span></label>
+<label class="check"><input type="checkbox" id="insecure"><span>Ignorar validação SSL<small>-k · use apenas em testes</small></span></label>
+</div></section>
+</form>
+<aside class="panel output"><h2>03 · Comando gerado</h2><label for="terminal">Terminal de destino</label><select id="terminal"><option value="powershell">PowerShell</option><option value="bash">Bash</option><option value="cmd">CMD</option><option value="single">Uma linha</option></select>
+<p class="help" id="terminalHelp"></p>
+<div id="psVersionSection" class="group"><label for="psVersion">Versão do PowerShell</label><select id="psVersion"><option value="modern">PowerShell 7.3 ou superior</option><option value="legacy">Windows PowerShell 5.1 / modo Legacy</option></select></div>
+<pre><code id="command">Preencha a URL para gerar o comando.</code></pre>
+<div class="toolbar"><button id="copy" type="button" class="primary" disabled>Copiar comando</button><button id="clear" type="button">Limpar</button></div>
+<p id="validation" class="status" role="status" aria-live="polite"></p><div id="warnings"></div>
+<p class="help">O comando pode conter senhas e tokens. Revise antes de compartilhar. Nenhuma requisição é executada por esta página.</p>
+</aside>
+</div>
+<footer>Processamento local: seus dados não são enviados a nenhum servidor nem armazenados no navegador.</footer>
+</main><div id="toast" role="status" hidden>Comando copiado!</div>
+<script>
+'use strict';
+// Estado e utilitários: nunca inserimos conteúdo do usuário via innerHTML.
+const $ = id => document.getElementById(id);
+const form = $('builder');
+let generated = '', toastTimer;
+const bodyMethods = new Set(['POST', 'PUT', 'PATCH']);
+const headerNamePattern = /^[!#$%&'*+.^_`|~0-9A-Za-z-]+$/;
+function addHeader(key = '', value = '') {
+  const row = document.createElement('div'); row.className = 'header-row';
+  const k = document.createElement('input'); k.placeholder = 'Key'; k.value = key; k.setAttribute('aria-label', 'Nome do header'); k.className = 'header-key';
+  const v = document.createElement('input'); v.placeholder = 'Value'; v.value = value; v.setAttribute('aria-label', 'Valor do header'); v.className = 'header-value';
+  const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'remove'; remove.textContent = '×'; remove.setAttribute('aria-label', 'Remover header');
+  remove.addEventListener('click', () => { row.remove(); render(); });
+  row.append(k, v, remove); $('headers').append(row); render();
+}
+// Bash: aspas simples literais, com fechamento/reabertura para apóstrofos.
+function bashQuote(s) { return "'" + s.replace(/'/g, "'\\''") + "'"; }
+// Serialização Windows CRT: dobra barras anteriores a aspas e barras finais.
+function windowsQuote(s) { return '"' + s.replace(/(\\*)"/g, '$1$1\\"').replace(/(\\+)$/g, '$1$1') + '"'; }
+function psLiteral(s) { return "'" + s.replace(/'/g, "''") + "'"; }
+function quote(s, terminal) {
+  if (terminal === 'bash' || terminal === 'single') return bashQuote(s);
+  if (terminal === 'cmd') return windowsQuote(s);
+  if ($('psVersion').value === 'legacy' && s.includes('"')) {
+    // Legacy não preserva aspas internas: adiciona escape para o parser nativo.
+    const escaped = s.replace(/(\\*)"/g, '$1$1\\"').replace(/(\\+)$/g, '$1$1');
+    return psLiteral(escaped);
+  }
+  return psLiteral(s);
+}
+function render() {
+  const method = $('method').value, terminal = $('terminal').value;
+  const hasBody = bodyMethods.has(method);
+  $('bodySection').hidden = !hasBody;
+  $('customTypeSection').hidden = $('contentType').value !== 'custom';
+  for (const type of ['bearer', 'basic', 'api']) $(type + 'Section').hidden = $('auth').value !== type;
+  $('psVersionSection').hidden = terminal !== 'powershell';
+  const tips = {
+    powershell: 'Crase para continuar linhas. No modo 7.3+, o comando configura o envio de argumentos como Standard para preservar aspas.',
+    bash: 'Barra invertida para continuar linhas. Compatível com Bash no Linux e macOS.',
+    cmd: 'Circunflexo (^) para continuar linhas. Cole no CMD interativo, não em arquivo .bat. Valores com %, ! ou quebras não são aceitos por segurança.',
+    single: 'Uma linha com sintaxe Bash/POSIX. Não é uma sintaxe universal para todos os terminais.'
+  }; $('terminalHelp').textContent = tips[terminal];
+  const errors = [], warnings = [], lines = [], values = [];
+  const url = $('url').value.trim();
+  if (!url) errors.push('Preencha a URL para gerar o comando.');
+  else { try { const parsed = new URL(url); if (!['http:', 'https:'].includes(parsed.protocol)) throw Error(); } catch { errors.push('Informe uma URL absoluta válida, iniciada por http:// ou https://.'); } }
+  const onlyHeaders = $('head').checked || method === 'HEAD';
+  if (onlyHeaders && method !== 'HEAD' && method !== 'GET') warnings.push('A opção “apenas headers” usa HEAD, substitui o método selecionado e não envia o body.');
+  function arg(flag, value) { values.push(value); lines.push(flag + ' ' + quote(value, terminal)); }
+  if (onlyHeaders) lines.push('-I'); else if ($('include').checked) lines.push('-i');
+  const shouldAddMethod = !onlyHeaders && ( method === 'PUT' || method === 'PATCH' || method === 'DELETE' ||(method === 'POST' && !hasBody));
+  if (shouldAddMethod) { lines.push('-X ' + method);}
+  // --url impede que uma URL seja interpretada como uma opção de linha de comando.
+  arg('--url', url);
+  const headers = [];
+  document.querySelectorAll('.header-row').forEach(row => {
+    const key = row.querySelector('.header-key').value.trim(), value = row.querySelector('.header-value').value;
+    if (!key && !value) return;
+    if (!headerNamePattern.test(key) || /[\r\n\0]/.test(value)) errors.push('Headers devem ter um nome válido e valores sem quebras de linha.');
+    else headers.push([key, value]);
+  });
+  const auth = $('auth').value;
+  if (auth === 'bearer') { if (!$('token').value.trim()) errors.push('Informe o Bearer Token.'); else headers.push(['Authorization', 'Bearer ' + $('token').value.trim()]); }
+  if (auth === 'basic') {
+    if (!$('username').value) errors.push('Informe o usuário do Basic Auth.');
+    if ($('username').value.includes(':')) errors.push('O usuário Basic Auth não pode conter dois-pontos.');
+    arg('-u', $('username').value + ':' + $('password').value);
+  }
+  if (auth === 'api') { const name = $('apiName').value.trim(); if (!headerNamePattern.test(name) || !$('apiValue').value) errors.push('Informe um nome de header válido e a API Key.'); else headers.push([name, $('apiValue').value]); }
+  let body = $('body').value;
+  if (hasBody && !onlyHeaders && body !== '') {
+    const contentType = $('contentType').value === 'custom' ? $('customType').value.trim() : $('contentType').value;
+    if (!contentType) errors.push('Informe o Content-Type personalizado.');
+    if (!headers.some(([key]) => key.toLowerCase() === 'content-type')) headers.push(['Content-Type', contentType]);
+    // CMD não possui strings multilinha: JSON pode ser compactado sem mudar os dados.
+    if (terminal === 'cmd' && /[\r\n]/.test(body) && /^application\/json(?:;|$)/i.test(contentType)) {
+      try { body = JSON.stringify(JSON.parse(body)); warnings.push('O JSON foi compactado para caber em um argumento do CMD.'); } catch { errors.push('No CMD, o body JSON multilinha deve ser um JSON válido.'); }
+    }
+    if (/^application\/json(?:;|$)/i.test(contentType)) { try { JSON.parse(body); } catch { warnings.push('O body não é um JSON válido. O conteúdo será enviado literalmente.'); } }
+  }
+  const seen = new Set();
+  for (const [key, value] of headers) {
+    if (/[\r\n\0]/.test(value)) errors.push('Headers e credenciais de header não podem conter quebras de linha.');
+    const lower = key.toLowerCase();
+    if (seen.has(lower)) warnings.push('Header duplicado: ' + key + '. Revise os valores.');
+    if (lower === 'authorization' && auth === 'basic') warnings.push('Authorization personalizado junto com Basic Auth: revise a autenticação.');
+    seen.add(lower); arg('-H', key + ': ' + value);
+  }
+  if (hasBody && !onlyHeaders && body !== '') arg('--data-raw', body);
+  // Combina todas as métricas em exatamente um parâmetro -w.
+  const metrics = [];
+  if ($('status').checked) metrics.push('HTTP Status: %{http_code}');
+  if ($('time').checked) metrics.push('Tempo total: %{time_total}s');
+  if ($('size').checked) metrics.push('Tamanho: %{size_download} bytes');
+  if (metrics.length) lines.push('-w ' + quote('\\n' + metrics.join('\\n') + '\\n', terminal));
+  if ($('saveHeaders').checked) lines.push('-D headers.txt');
+  if ($('saveBody').checked) lines.push('-o response.txt');
+  if ($('verbose').checked) { lines.push('-v'); warnings.push('O modo verboso pode exibir tokens e credenciais nos logs. Ele não imprime necessariamente o body enviado.'); }
+  if ($('redirect').checked) lines.push('-L');
+  if ($('insecure').checked) { lines.push('-k'); warnings.push('SSL sem validação: a identidade do servidor não será verificada. Use apenas em testes.'); }
+  if ($('saveBody').checked && $('include').checked && !onlyHeaders) warnings.push('Com -i e -o, response.txt inclui headers e body. Para separá-los, desmarque -i e use -D.');
+  if (onlyHeaders && $('size').checked) warnings.push('HEAD não baixa o body: size_download normalmente será zero.');
+  if (values.some(v => v.includes('\0'))) errors.push('Caracteres NUL não podem ser enviados em argumentos do terminal.');
+  if (terminal === 'cmd' && values.some(v => /[%!\r\n]/.test(v))) errors.push('CMD: valores com %, ! ou quebras de linha não podem ser representados com segurança. Use Bash ou PowerShell.');
+  const executable = ['powershell', 'cmd'].includes(terminal) ? 'curl.exe' : 'curl';
+  const separators = {powershell: ' `\n  ', bash: ' \\\n  ', cmd: ' ^\n  ', single: ' '};
+  generated = errors.length ? '' : executable + separators[terminal] + lines.join(separators[terminal]);
+  if (generated && terminal === 'powershell' && $('psVersion').value === 'modern') generated = "$PSNativeCommandArgumentPassing = 'Standard';\n" + generated;
+  $('command').textContent = generated || errors.join('\n');
+  $('copy').disabled = !generated;
+  $('validation').textContent = errors.length ? errors[0] : 'Pronto para copiar · atualizado automaticamente';
+  $('validation').classList.toggle('error', errors.length > 0);
+  $('url').setAttribute('aria-invalid', String(Boolean(url && errors.some(e => e.includes('URL')))));
+  $('warnings').replaceChildren();
+  for (const warning of new Set(warnings)) { const el = document.createElement('div'); el.className = 'notice'; el.textContent = warning; $('warnings').append(el); }
+}
+// Clipboard API + fallback para arquivos locais e navegadores sem contexto seguro.
+$('copy').addEventListener('click', async () => {
+  if (!generated) return;
+  let ok = false;
+  try { if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(generated); ok = true; } } catch {}
+  if (!ok) {
+    const text = document.createElement('textarea'); text.value = generated; text.style.position = 'fixed'; text.style.opacity = '0'; document.body.append(text); text.select();
+    try { ok = document.execCommand('copy'); } catch {} text.remove(); $('copy').focus();
+  }
+  if (ok) { clearTimeout(toastTimer); $('toast').hidden = false; toastTimer = setTimeout(() => $('toast').hidden = true, 2200); }
+  else { $('validation').textContent = 'O navegador bloqueou a cópia. Selecione o comando e copie manualmente.'; }
+});
+$('addHeader').addEventListener('click', () => { addHeader(); $('headers').lastElementChild.querySelector('input').focus(); });
+$('clear').addEventListener('click', () => { form.reset(); $('terminal').value = 'powershell'; $('psVersion').value = 'modern'; $('headers').replaceChildren(); $('toast').hidden = true; clearTimeout(toastTimer); render(); $('url').focus(); });
+form.addEventListener('submit', e => e.preventDefault());
+form.addEventListener('input', render); form.addEventListener('change', render);
+$('terminal').addEventListener('change', render); $('psVersion').addEventListener('change', render);
+render();
+</script>
+</body>
+</html>
